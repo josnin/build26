@@ -1,6 +1,8 @@
 <script setup>
   //import { defineProps } from 'vue';
-  import { ref, onMounted } from 'vue';
+  import { ref, onMounted, createApp } from 'vue';
+  import Text from '@/components/Text.vue'
+
 
   const props = defineProps({
     justifyItems: {
@@ -16,7 +18,7 @@
       default: '300px'
     },
     height: {
-      type: String,
+     type: String,
       default: '300px'
     }
   })
@@ -24,42 +26,46 @@
   const root = ref('');
 
   onMounted(() => {
-    console.log('root value', root.value)
+    //console.log('root value', root.value)
   })
 
 
+
+  let data = '';
+
   const onDrop = (e) => {
-    const data = e.dataTransfer.getData("text");
-    console.log('drop', e);
-    console.log('data here', data);
-    e.target.appendChild(root.value);
+   //e.dataTransfer.getData("text");
+   // console.log('drop', e);
+   // console.log('data here', data);
+   // console.log('wrapper', wrapper)
+    const app = createApp(data)
+    const wrapper = document.createElement("div")
+    app.mount(wrapper)
+    e.target.appendChild(wrapper);
   };
 
-  const onDrag = (e) => {
-    //e.dataTransfer.setData("text", e.target.id);
-    console.log('onDrag', root.value)
+  const onDrag = (e, t) => {
+    data = t;
   }
 
 
-  console.log(`im  box ${props.width} ${props.height}`)
 </script>
 
 <template>
   <div 
-    ref="root"
     class="box" 
     :style="{ justifyItems: props.justifyItems, alignItems: props.alignItems }">
     <div 
       draggable
-      @dragstart="onDrag($event)"
+      @dragstart="onDrag($event, Text)"
       class="box__size" 
       :style="{ width: props.width, height: props.height }"> 
         resize me??
+      <Text/>
     </div>
   </div>
 
   <div style="border:3px solid red;width:600px; height:600px" 
-    ref="root2"
     @drop="onDrop($event)"
     @dragover.prevent
     >
