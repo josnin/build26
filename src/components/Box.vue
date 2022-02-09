@@ -1,8 +1,15 @@
 <script setup>
   //import { defineProps } from 'vue';
-  import { ref, onMounted, createApp } from 'vue';
+  import { ref, onMounted, createApp, computed } from 'vue';
   import Text from '@/components/Text.vue'
+  import useSite  from '@/use/useSite';
+  import store from '@/store';
 
+  import { useStore } from 'vuex';
+
+  const site = useSite();
+  const store1 = useStore();
+  const dragComponent = computed(() => store1.state.site.drag_component)
 
   const props = defineProps({
     justifyItems: {
@@ -15,49 +22,39 @@
     },
     width: {
       type: String,
-      default: '300px'
+      default: '200px'
     },
     height: {
      type: String,
-      default: '300px'
+      default: '200px'
     }
   })
 
-  const root = ref('');
-
-  onMounted(() => {
-    //console.log('root value', root.value)
-  })
-
-
-
-  let data = '';
 
   const onDrop = (e) => {
-   //e.dataTransfer.getData("text");
-   // console.log('drop', e);
-   // console.log('data here', data);
-   // console.log('wrapper', wrapper)
-    const app = createApp(data)
+    console.log('data here', store1.state.site.drag_component );
+    const app = createApp(store1.state.site.drag_component);
     const wrapper = document.createElement("div")
-    app.mount(wrapper)
+    app.use(store).mount(wrapper)
     e.target.appendChild(wrapper);
   };
 
+
   const onDrag = (e, t) => {
-    data = t;
+    site.set(t) ;
   }
+
 
 
 </script>
 
 <template>
   <div 
+    draggable
+    @dragstart="onDrag($event, Text)"
     class="box" 
     :style="{ justifyItems: props.justifyItems, alignItems: props.alignItems }">
     <div 
-      draggable
-      @dragstart="onDrag($event, Text)"
       class="box__size" 
       :style="{ width: props.width, height: props.height }"> 
         resize me??
@@ -65,12 +62,14 @@
     </div>
   </div>
 
-  <div style="border:3px solid red;width:600px; height:600px" 
+  <div style="border:3px solid red;width:300px; height:300px" 
     @drop="onDrop($event)"
     @dragover.prevent
     >
     Drop here
   </div>
+
+
 </template>
 
 <style lang="scss" scoped>
