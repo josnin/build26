@@ -1,7 +1,7 @@
 <script setup>
   //import { defineProps } from 'vue';
   import { ref, onMounted, createApp, computed } from 'vue';
-  import Text from '@/components/Text.vue'
+  import Button from '@/components/Button.vue'
   import useSite  from '@/use/useSite';
   import store from '@/store';
 
@@ -51,14 +51,12 @@
 <template>
   <div 
     draggable
-    @dragstart="onDrag($event, Text)"
+    @dragstart="onDrag($event, Button)"
     class="box" 
     :style="{ justifyItems: props.justifyItems, alignItems: props.alignItems }">
     <div 
       class="box__size" 
       :style="{ width: props.width, height: props.height }"> 
-        resize me??
-      <Text/>
     </div>
   </div>
 
