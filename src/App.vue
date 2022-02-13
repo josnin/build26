@@ -1,9 +1,9 @@
 <script setup>
 // This starter template is using Vue 3 <script setup> SFCs
 // Check out https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup
-import Box from '@/components/Box.vue'
+import Canvas from '@/components/Canvas.vue'
 </script>
 
 <template>
-  <Box />
+  <Canvas/>
 </template>

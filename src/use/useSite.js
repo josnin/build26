@@ -5,12 +5,17 @@ export default function useSite() {
 
       const store = useStore()
 
-      const set = (cmp) => {
+      const setDragComponent = (cmp) => {
         store.commit(`site/${types.SET_DRAG_COMPONENT}`, cmp)
       }
 
+      const setNextSibling = (next) => {
+        store.commit(`site/${types.SET_NEXT_SIBLING}`, next);
+      }
+
       return {
-        set
+        setDragComponent,
+        setNextSibling
       }
 
 }

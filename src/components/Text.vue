@@ -7,32 +7,30 @@
   const site = useSite();
 
 
-
 </script>
 <template>
-  <div 
-    class="btn">
-    <button>Click Me</button>
+  <div class="txt">
+    Hello World!
   </div>
 
 </template>
 
 <style lang="scss"  scoped>
 
-  button {
+  .txt {
     width:100%;
     height: 100%;
   }
 
   .btn {
-    margin: .2rem;
     resize:both;
     overflow:auto;
+    border:1px solid #eee;
     width:inherit;
     height: fit-content;
   }
 
   .btn:hover {
-    border: 2px dashed #4286f4;
+    border: 2px solid #4286f4;
   }
 </style>
