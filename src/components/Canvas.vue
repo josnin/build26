@@ -18,6 +18,7 @@
     app.use(store).mount(el)
     e.target.appendChild(el);
 
+
     //document.querySelectorAll('[data-b26]').forEach(el2 => { 
     //  console.log(el2.dataset.b26);
     //  console.log(el2.getBoundingClientRect().y);
