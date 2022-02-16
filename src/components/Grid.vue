@@ -23,20 +23,12 @@
   const range = (min, max) => Array.from({ length: max - min + 1 }, (_, i) => min + i);
 
 
-  // @todo use store
-  let merge1 = {};
   const setRowColStart = (e, r, c) => {
-    console.log('going here?', r, c)
-    merge1 = {
-      r, c
-    }
-
     grid.setGrid({
       rowStart: r,
       colStart: c,
       classId: (+new Date).toString(36)
     })
-
   }
 
   const highlightMergedCells = (e) => {
