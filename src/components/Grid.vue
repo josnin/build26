@@ -23,10 +23,10 @@
   const range = (min, max) => Array.from({ length: max - min + 1 }, (_, i) => min + i);
 
 
-  const setRowColStart = (e, r, c) => {
+  const setRowColStart = (e, row1, col1) => {
     grid.setGrid({
-      rowStart: r,
-      colStart: c,
+      rowStart: row1,
+      colStart: col1,
       classId: (+new Date).toString(36)
     })
   }
@@ -36,34 +36,51 @@
     e.target.style.border = 'thin solid #4286f4';
   }
 
-  const addElementClass = (r1, c1) => {
 
-    const rowNumbers = range(rowStart.value, r1);
-    const colNumbers = range(colStart.value, c1);
+  const highlightCells2Merge = (row1, col1) => {
+    const rowNumbers = range(rowStart.value, row1);
+    const colNumbers = range(colStart.value, col1);
 
-    rowNumbers.forEach(r2 => {
-      colNumbers.forEach(c2 => {
-        document.querySelector(`.ga${r2}${c2}`).classList.add(classId.value)
+    rowNumbers.forEach(r => {
+      colNumbers.forEach(c => {
+        document.querySelector(
+          `.ga${r}${c}`
+        ).style.backgroundColor = '#e7feff';
+      })
+    })
+
+
+  }
+
+  const addElementClass = (row1, col1) => {
+
+    const rowNumbers = range(rowStart.value, row1);
+    const colNumbers = range(colStart.value, col1);
+
+    rowNumbers.forEach(r => {
+      colNumbers.forEach(c => {
+        document.querySelector(`.ga${r}${c}`).classList.add(classId.value)
       })
     })
 
   }
 
-  const updateGridArea = (e, r2, c2) => {
+  const updateGridArea = (e, row2, col2) => {
     const style = document.createElement('style');
-    e.target.appendChild(style);
+    e.target.parentElement.appendChild(style);
     style.innerHTML = `
       .${classId.value} {
-        grid-area: ${rowStart.value} / ${colStart.value} / ${r2} / ${c2};
+        grid-area: ${rowStart.value} / ${colStart.value} / ${row2} / ${col2};
+        background-color: #e7feff;
       }
     `;
 
   };
 
-  const setRowColEnd = (e, r1, r2, c1, c2) => {
-    addElementClass(r1, c2);
-    updateGridArea(e, r2, c2);
-    highlightMergedCells(e);
+  const setRowColEnd = (e, row1, row2, col1, col2) => {
+    highlightCells2Merge(row1, col1);
+    //addElementClass(row1, col1);
+    //updateGridArea(e, row2, col2);
   }
 
 
@@ -75,14 +92,14 @@
     class="layout"
   >
     <template
-      v-for="r of props.rowNum"
+      v-for="row1 of props.rowNum"
     >
       <div 
-        v-for="c of props.colNum" 
+        v-for="col1 of props.colNum" 
         class="layout__box"
-        @mousedown="setRowColStart($event, r, c)"
-        @mouseup="setRowColEnd($event, r, r+1, c, c+1)"
-        :class="`ga${r}${c}`"
+        @mousedown="setRowColStart($event, row1, col1)"
+        @mouseup="setRowColEnd($event, row1, row1 + 1, col1, col1 + 1)"
+        :class="`ga${row1}${col1}`"
       ></div>
       
     </template>
