@@ -82,6 +82,9 @@
     style.innerHTML = `
       .${classId.value}[data-${dataset.value}] {
         grid-area: ${rowStart.value} / ${colStart.value} / ${row2} / ${col2};
+        justify-items: center;
+        align-items: center;
+        height: 100%;
       }
     `;
 
@@ -124,15 +127,20 @@
     grid-template-columns: repeat(v-bind('props.colNum'), auto) ;
     grid-template-rows: repeat(v-bind('props.rowNum'), auto) ;
     justify-items:center;
+    align-items:center;
     padding:.2rem;
+    height:100%;
+    gap: .2rem;
 
     &__box {
       //background-color: #e7feff;
-      border: 1px dashed gray;
-      height:auto;
+      border: 2px dotted purple;
+      height:100%;
       min-height: 50px;
       width:100%;
       display: grid;
+      justify-items: center;
+      align-items:center;
       padding: .2rem;
       grid-auto-flow: column;
     }
