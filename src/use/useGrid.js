@@ -6,6 +6,10 @@ export default function useGrid() {
       const store = useStore()
 
       const setGrid = (data) => {
+        data =  {
+          ...store.state.grid.grid,
+          ...data
+        }
         store.commit(`grid/${types.SET_GRID_OK}`, data)
       }
 

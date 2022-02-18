@@ -10,6 +10,7 @@
 
   const site = useSite();
   const store1 = useStore();
+  const classId = computed( () => store1.state.grid.grid.classId);
 
   const onDrop = (e) => {
     const app = createApp(store1.state.site.drag_component);
@@ -28,6 +29,14 @@
 
   const onDrag = (e, t) => {
     site.setDragComponent(t) ;
+  }
+
+  const unMerge = () => {
+    document.querySelectorAll('.layout__box').forEach(
+      e => { 
+        console.log(e.classList.remove(classId.value)) 
+      }
+    )
   }
 
 </script>
@@ -65,6 +74,23 @@
         Box
       </div>
       <!--Box-->
+
+      <!--Merge Grid-->
+      <div 
+        class="menu" 
+        >
+        Merge
+      </div>
+      <!--Merge Grid-->
+
+      <!--Unmerge Grid-->
+      <div 
+        class="menu" 
+        @click="unMerge()"
+        >
+        UnMerge
+      </div>
+      <!--Unmerge Grid-->
     </div>
 
     <div class="canvas"

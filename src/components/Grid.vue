@@ -1,5 +1,5 @@
 <script setup>
-  import { computed } from 'vue';
+  import { computed, onMounted, ref } from 'vue';
   import useGrid  from '@/use/useGrid';
   import store from '@/store';
 
@@ -15,19 +15,32 @@
     },
   });
 
+  const root = ref(null);
   const rowStart = computed( () =>  store.state.grid.grid.rowStart);
   const colStart = computed( () => store.state.grid.grid.colStart);
   const classId = computed( () => store.state.grid.grid.classId);
+  const dataset = computed( () => store.state.grid.grid.dataset);
 
   // @todo move to utils?
   const range = (min, max) => Array.from({ length: max - min + 1 }, (_, i) => min + i);
 
+  onMounted(() => {
+    getDataset();
+  })
+
+  const getDataset = () => {
+    for (const [key, value] of Object.entries(root.value.dataset)) {
+      grid.setGrid({
+          dataset: key
+        })
+    }
+  }
 
   const setRowColStart = (e, row1, col1) => {
     grid.setGrid({
-      rowStart: row1,
-      colStart: col1,
-      classId: (+new Date).toString(36)
+        rowStart: row1,
+        colStart: col1,
+        classId: (+new Date).toString(36)
     })
   }
 
@@ -48,8 +61,6 @@
         ).style.backgroundColor = '#e7feff';
       })
     })
-
-
   }
 
   const addElementClass = (row1, col1) => {
@@ -69,18 +80,17 @@
     const style = document.createElement('style');
     e.target.parentElement.appendChild(style);
     style.innerHTML = `
-      .${classId.value} {
+      .${classId.value}[data-${dataset.value}] {
         grid-area: ${rowStart.value} / ${colStart.value} / ${row2} / ${col2};
-        background-color: #e7feff;
       }
     `;
 
   };
 
   const setRowColEnd = (e, row1, row2, col1, col2) => {
-    highlightCells2Merge(row1, col1);
-    //addElementClass(row1, col1);
-    //updateGridArea(e, row2, col2);
+    //highlightCells2Merge(row1, col1);
+    addElementClass(row1, col1);
+    updateGridArea(e, row2, col2);
   }
 
 
@@ -90,6 +100,7 @@
 <template>
   <div 
     class="layout"
+    ref="root"
   >
     <template
       v-for="row1 of props.rowNum"
@@ -101,7 +112,7 @@
         @mouseup="setRowColEnd($event, row1, row1 + 1, col1, col1 + 1)"
         :class="`ga${row1}${col1}`"
       ></div>
-      
+
     </template>
   </div>
 </template>
