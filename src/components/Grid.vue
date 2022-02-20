@@ -3,7 +3,7 @@
   import useGrid  from '@/use/useGrid';
   import store from '@/store';
   
-  const gridCell = ref([]);
+  const defaultGridCell = ref([]);
   const mergedCells = ref([]);
   const grid = useGrid();
 
@@ -18,10 +18,12 @@
     },
   });
 
-  const rowStart = computed( () =>  store.state.grid.grid.rowStart);
-  const colStart = computed( () => store.state.grid.grid.colStart);
+  const currentRowStart = computed( () =>  store.state.grid.grid.rowStart);
+  const currentColStart = computed( () => store.state.grid.grid.colStart);
+  const currentRowEnd = computed( () =>  store.state.grid.grid.rowEnd);
+  const currentColEnd = computed( () => store.state.grid.grid.colEnd);
   const currentClassId = computed( () => store.state.grid.grid.classId);
-  const selectedGridCell = computed( () => gridCell.value.filter(e => e.selected == true) );
+  const selectedGridCell = computed( () => defaultGridCell.value.filter(e => e.selected == true) );
 
   // @todo move to utils?
   const range = (min, max) => Array.from({ length: max - min + 1 }, (_, i) => min + i);
@@ -31,12 +33,12 @@
   })
 
   const generateGridCell = () => {
-    const classId =  `b26-${(+new Date).toString(36)}`;
+    const classId =  (+new Date).toString(36);
     const rowNumbers = range(1, props.rowNum);
     const colNumbers = range(1, props.colNum);
     rowNumbers.forEach(r => {
       colNumbers.forEach(c => {
-        gridCell.value.push({
+        defaultGridCell.value.push({
           class: classId,
           rowStart: r,
           colStart: c,
@@ -65,22 +67,21 @@
     // clear active selection
     selectedGridCell.value.map(
       e => {
-        //e.merged = true;
         e.selected = false;
       }
     )
   }
 
-  const highlightSelectedCells = (argRowStart, argColStart) => {
-    const rowNumbers = range(rowStart.value, argRowStart);
-    const colNumbers = range(colStart.value, argColStart);
+  const highlightSelectedCells = (rowStart, colStart) => {
+    const rowNumbers = range(currentRowStart.value, rowStart);
+    const colNumbers = range(currentColStart.value, colStart);
 
     clearActiveSelection();
 
     // highlight selected value
     rowNumbers.forEach(r => {
       colNumbers.forEach(c => {
-        gridCell.value.filter(e => e.rowStart === r && e.colStart === c).map(
+        defaultGridCell.value.filter(e => e.rowStart === r && e.colStart === c).map(
           e => e.selected = true
         )
       })
@@ -90,24 +91,33 @@
 
   const mergeCell = () => {
 
-    const rowEnd = selectedGridCell.value.reduce((a,b)=>gridCell.value.rowEnd>b.rowEnd?a:b).rowEnd
-    const colEnd = selectedGridCell.value.reduce((a,b)=>gridCell.value.colEnd>b.colEnd?a:b).colEnd
+    //const rowEnd = selectedGridCell.value.reduce((a,b)=>defaultGridCell.value.rowEnd>b.rowEnd?a:b).rowEnd
+    //const colEnd = selectedGridCell.value.reduce((a,b)=>defaultGridCell.value.colEnd>b.colEnd?a:b).colEnd
 
     selectedGridCell.value.map(e => {
       e.merged = true;
+      e.selected = false;
       e.mergedId = currentClassId.value;
     });
 
     mergedCells.value.push(
-      { mergedId: currentClassId.value, gridArea: `${rowStart.value} / ${colStart.value} / ${rowEnd} / ${colEnd}`}
+      { 
+        mergedId: currentClassId.value, 
+        gridArea: `${currentRowStart.value} / ${currentColStart.value} / ${currentRowEnd.value} / ${currentColEnd.value}`,
+        justifyItems: 'center',
+        alignItems: 'center',
+        height: '100%'
+      }
     )
-
-    clearActiveSelection();
 
   }
 
-  const setRowColEnd = (row1, row2, col1, col2) => {
-    highlightSelectedCells(row1, col1);
+  const setRowColEnd = (rowStart, rowEnd, colStart, colEnd) => {
+    grid.setGrid({
+      rowEnd,
+      colEnd
+    })
+    highlightSelectedCells(rowStart, colStart);
     mergeCell();
   }
 
@@ -124,7 +134,7 @@
 
     <!-- default grid cells -->
     <template
-      v-for="g of gridCell"
+      v-for="g of defaultGridCell"
     >
       <div
         class="layout__box"
@@ -133,44 +143,38 @@
         @mouseup="setRowColEnd(g.rowStart, g.rowEnd, g.colStart, g.colEnd)"
         v-if="g.merged==false"
       >
-
       {{g}}
-
       </div>
-
     </template>
     <!-- default grid cells -->
 
     <!-- display merged cells -->
     <template
-      v-for="mc of mergedCells"
+      v-for="m of mergedCells"
     >
       <div
         class="layout__box"
-        :class="`mergedId-${mc.mergedId}`"
+        :class="m.mergedId"
       >
-
-      {{mc}}
-
+      {{m}}
       </div>
-      <!-- display merged cells -->
-
-
     </template>
+    <!-- display merged cells -->
 
     <!-- generate style -->
     <component is="style">
-      <template v-for="mc of mergedCells">
-        .mergedId-{{mc.mergedId}} {
-          grid-area: {{mc.gridArea}};
-          justify-items: center;
-          align-items: center;
-          height: 100%;
+      <template v-for="m of mergedCells">
+        .{{m.mergedId}} {
+          grid-area: {{m.gridArea}};
+          justify-items: {{m.justifyItems}};
+          align-items: {{m.alignItems}};
+          height: {{m.height}};
         }
 
       </template>
     </component>
     <!-- generate style -->
+
   </div>
 </template>
 
