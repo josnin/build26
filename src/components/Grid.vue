@@ -29,10 +29,10 @@
   const range = (min, max) => Array.from({ length: max - min + 1 }, (_, i) => min + i);
 
   onMounted(() => {
-    generateGridCell()
+    genDefaultGridCell()
   })
 
-  const generateGridCell = () => {
+  const genDefaultGridCell = () => {
     const classId =  (+new Date).toString(36);
     const rowNumbers = range(1, props.rowNum);
     const colNumbers = range(1, props.colNum);
@@ -150,25 +150,25 @@
 
     <!-- display merged cells -->
     <template
-      v-for="m of mergedCells"
+      v-for="merged of mergedCells"
     >
       <div
         class="layout__box"
-        :class="m.mergedId"
+        :class="merged.mergedId"
       >
-      {{m}}
+      {{merged}}
       </div>
     </template>
     <!-- display merged cells -->
 
     <!-- generate style -->
     <component is="style">
-      <template v-for="m of mergedCells">
-        .{{m.mergedId}} {
-          grid-area: {{m.gridArea}};
-          justify-items: {{m.justifyItems}};
-          align-items: {{m.alignItems}};
-          height: {{m.height}};
+      <template v-for="style of mergedCells">
+        .{{style.mergedId}} {
+          grid-area: {{style.gridArea}};
+          justify-items: {{style.justifyItems}};
+          align-items: {{style.alignItems}};
+          height: {{style.height}};
         }
 
       </template>
