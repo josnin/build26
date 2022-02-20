@@ -2,12 +2,15 @@
   import { computed, onMounted, ref } from 'vue';
   import useGrid  from '@/use/useGrid';
   import store from '@/store';
-
+  
+  const gridCell = ref([]);
+  const mergedCells = ref([]);
   const grid = useGrid();
+
   const props = defineProps({
     colNum: {
       type: Number,
-      default: 4
+      default: 2
     },
     rowNum: {
       type: Number,
@@ -15,86 +18,100 @@
     },
   });
 
-  const root = ref(null);
   const rowStart = computed( () =>  store.state.grid.grid.rowStart);
   const colStart = computed( () => store.state.grid.grid.colStart);
-  const classId = computed( () => store.state.grid.grid.classId);
-  const dataset = computed( () => store.state.grid.grid.dataset);
+  const currentClassId = computed( () => store.state.grid.grid.classId);
+  const selectedGridCell = computed( () => gridCell.value.filter(e => e.selected == true) );
 
   // @todo move to utils?
   const range = (min, max) => Array.from({ length: max - min + 1 }, (_, i) => min + i);
 
   onMounted(() => {
-    getDataset();
+    generateGridCell()
   })
 
-  const getDataset = () => {
-    for (const [key, value] of Object.entries(root.value.dataset)) {
-      grid.setGrid({
-          dataset: key
+  const generateGridCell = () => {
+    const classId =  `b26-${(+new Date).toString(36)}`;
+    const rowNumbers = range(1, props.rowNum);
+    const colNumbers = range(1, props.colNum);
+    rowNumbers.forEach(r => {
+      colNumbers.forEach(c => {
+        gridCell.value.push({
+          class: classId,
+          rowStart: r,
+          colStart: c,
+          rowEnd: r + 1,
+          colEnd: c + 1,
+          selected: false,
+          merged: false,
+          mergedId: null
         })
-    }
+      })
+    })
+
   }
 
-  const setRowColStart = (e, row1, col1) => {
+  const setRowColStart = (rowStart, colStart) => {
+    console.log(rowStart, colStart)
     grid.setGrid({
-        rowStart: row1,
-        colStart: col1,
+        rowStart,
+        colStart,
         classId: (+new Date).toString(36)
     })
   }
 
-  const highlightMergedCells = (e) => {
-    e.target.style.backgroundColor = '#e7feff';
-    e.target.style.border = 'thin solid #4286f4';
-  }
 
-
-  const highlightCells2Merge = (row1, col1) => {
-    const rowNumbers = range(rowStart.value, row1);
-    const colNumbers = range(colStart.value, col1);
-
-    rowNumbers.forEach(r => {
-      colNumbers.forEach(c => {
-        document.querySelector(
-          `.ga${r}${c}`
-        ).style.backgroundColor = '#e7feff';
-      })
-    })
-  }
-
-  const addElementClass = (row1, col1) => {
-
-    const rowNumbers = range(rowStart.value, row1);
-    const colNumbers = range(colStart.value, col1);
-
-    rowNumbers.forEach(r => {
-      colNumbers.forEach(c => {
-        document.querySelector(`.ga${r}${c}`).classList.add(classId.value)
-      })
-    })
-
-  }
-
-  const updateGridArea = (e, row2, col2) => {
-    const style = document.createElement('style');
-    e.target.parentElement.appendChild(style);
-    style.innerHTML = `
-      .${classId.value}[data-${dataset.value}] {
-        grid-area: ${rowStart.value} / ${colStart.value} / ${row2} / ${col2};
-        justify-items: center;
-        align-items: center;
-        height: 100%;
+  const clearActiveSelection = () => {
+    // clear active selection
+    selectedGridCell.value.map(
+      e => {
+        //e.merged = true;
+        e.selected = false;
       }
-    `;
-
-  };
-
-  const setRowColEnd = (e, row1, row2, col1, col2) => {
-    //highlightCells2Merge(row1, col1);
-    addElementClass(row1, col1);
-    updateGridArea(e, row2, col2);
+    )
   }
+
+  const highlightSelectedCells = (argRowStart, argColStart) => {
+    const rowNumbers = range(rowStart.value, argRowStart);
+    const colNumbers = range(colStart.value, argColStart);
+
+    clearActiveSelection();
+
+    // highlight selected value
+    rowNumbers.forEach(r => {
+      colNumbers.forEach(c => {
+        gridCell.value.filter(e => e.rowStart === r && e.colStart === c).map(
+          e => e.selected = true
+        )
+      })
+    })
+
+  }
+
+  const mergeCell = () => {
+
+    const rowEnd = selectedGridCell.value.reduce((a,b)=>gridCell.value.rowEnd>b.rowEnd?a:b).rowEnd
+    const colEnd = selectedGridCell.value.reduce((a,b)=>gridCell.value.colEnd>b.colEnd?a:b).colEnd
+
+    selectedGridCell.value.map(e => {
+      e.merged = true;
+      e.mergedId = currentClassId.value;
+    });
+
+    mergedCells.value.push(
+      { mergedId: currentClassId.value, gridArea: `${rowStart.value} / ${colStart.value} / ${rowEnd} / ${colEnd}`}
+    )
+
+    clearActiveSelection();
+
+  }
+
+  const setRowColEnd = (row1, row2, col1, col2) => {
+    highlightSelectedCells(row1, col1);
+    mergeCell();
+  }
+
+
 
 
 
@@ -103,20 +120,57 @@
 <template>
   <div 
     class="layout"
-    ref="root"
   >
+
+    <!-- default grid cells -->
     <template
-      v-for="row1 of props.rowNum"
+      v-for="g of gridCell"
     >
-      <div 
-        v-for="col1 of props.colNum" 
+      <div
         class="layout__box"
-        @mousedown="setRowColStart($event, row1, col1)"
-        @mouseup="setRowColEnd($event, row1, row1 + 1, col1, col1 + 1)"
-        :class="`ga${row1}${col1}`"
-      ></div>
+        :class="{ selected: g.selected }"
+        @mousedown="setRowColStart(g.rowStart, g.colStart)"
+        @mouseup="setRowColEnd(g.rowStart, g.rowEnd, g.colStart, g.colEnd)"
+        v-if="g.merged==false"
+      >
+
+      {{g}}
+
+      </div>
 
     </template>
+    <!-- default grid cells -->
+
+    <!-- display merged cells -->
+    <template
+      v-for="mc of mergedCells"
+    >
+      <div
+        class="layout__box"
+        :class="`mergedId-${mc.mergedId}`"
+      >
+
+      {{mc}}
+
+      </div>
+      <!-- display merged cells -->
+
+
+    </template>
+
+    <!-- generate style -->
+    <component is="style">
+      <template v-for="mc of mergedCells">
+        .mergedId-{{mc.mergedId}} {
+          grid-area: {{mc.gridArea}};
+          justify-items: center;
+          align-items: center;
+          height: 100%;
+        }
+
+      </template>
+    </component>
+    <!-- generate style -->
   </div>
 </template>
 
@@ -148,6 +202,10 @@
     &__box:hover {
       cursor:grab;
     }
+  }
+
+  .selected {
+    background-color: red;
   }
 
 
