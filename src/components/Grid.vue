@@ -33,13 +33,13 @@
   })
 
   const genDefaultGridCell = () => {
-    const classId =  (+new Date).toString(36);
+    //const classId =  (+new Date).toString(36);
     const rowNumbers = range(1, props.rowNum);
     const colNumbers = range(1, props.colNum);
     rowNumbers.forEach(r => {
       colNumbers.forEach(c => {
         defaultGridCell.value.push({
-          class: classId,
+          class: `gc-${r}${c}`,
           rowStart: r,
           colStart: c,
           rowEnd: r + 1,
@@ -121,6 +121,15 @@
     mergeCell();
   }
 
+  const unMerge = (mergedId) => {
+    mergedCells.value = mergedCells.value.filter(e => e.mergedId != mergedId);
+    defaultGridCell.value.filter(e => e.mergedId === mergedId).map(e => {
+      e.merged = false;
+      //e.selected = true;
+      e.mergedId = null;
+    });
+  }
+
 
 
 
@@ -130,6 +139,7 @@
 <template>
   <div 
     class="layout"
+    style="grid-template-columns: 1fr 1fr"
   >
 
     <!-- default grid cells -->
@@ -138,12 +148,12 @@
     >
       <div
         class="layout__box"
-        :class="{ selected: g.selected }"
+        :class="[{ selected: g.selected  }, g.class]"
+        v-if="g.merged==false"
         @mousedown="setRowColStart(g.rowStart, g.colStart)"
         @mouseup="setRowColEnd(g.rowStart, g.rowEnd, g.colStart, g.colEnd)"
-        v-if="g.merged==false"
       >
-      {{g}}
+        {{g}}
       </div>
     </template>
     <!-- default grid cells -->
@@ -157,6 +167,7 @@
         :class="merged.mergedId"
       >
       {{merged}}
+      <button @click="unMerge(merged.mergedId)">Un Merge?</button>
       </div>
     </template>
     <!-- display merged cells -->
@@ -172,6 +183,14 @@
         }
 
       </template>
+    <!--  <template
+        v-for="g of defaultGridCell"
+      >
+        .{{g.class}}:hover {
+            border-top:1px solid red;
+            grid-area: 1 / 1 / 2 / 3;
+        }
+      </template> -->
     </component>
     <!-- generate style -->
 
@@ -182,7 +201,7 @@
 
   .layout {
     display: grid;
-    grid-template-columns: repeat(v-bind('props.colNum'), auto) ;
+    //grid-template-columns: repeat(v-bind('props.colNum'), auto) ;
     grid-template-rows: repeat(v-bind('props.rowNum'), auto) ;
     justify-items:center;
     align-items:center;
@@ -205,7 +224,14 @@
 
     &__box:hover {
       cursor:grab;
+      span:hover {
+        cursor:pointer;
+        border:1px solid red;
+      }
     }
+
+
+
   }
 
   .selected {
