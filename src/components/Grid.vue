@@ -5,6 +5,8 @@
   
   const defaultGridCell = ref([]);
   const mergedCells = ref([]);
+  const btnStart = ref(true);
+  const btnEnd = ref(false);
   const grid = useGrid();
 
   const props = defineProps({
@@ -60,6 +62,8 @@
         colStart,
         classId: (+new Date).toString(36)
     })
+    btnStart.value = false;
+    btnEnd.value = true;
   }
 
 
@@ -119,6 +123,8 @@
     })
     highlightSelectedCells(rowStart, colStart);
     mergeCell();
+    btnStart.value = true;
+    btnEnd.value = false;
   }
 
   const unMerge = (mergedId) => {
@@ -150,10 +156,18 @@
         class="layout__box"
         :class="[{ selected: g.selected  }, g.class]"
         v-if="g.merged==false"
-        @mousedown="setRowColStart(g.rowStart, g.colStart)"
-        @mouseup="setRowColEnd(g.rowStart, g.rowEnd, g.colStart, g.colEnd)"
       >
         {{g}}
+        <button 
+          v-if="btnStart" 
+          @click="setRowColStart(g.rowStart, g.colStart)">
+          Start <!-- start selection -->
+        </button>
+        <button 
+          v-if="btnEnd" 
+          @click="setRowColEnd(g.rowStart, g.rowEnd, g.colStart, g.colEnd)">
+          End  <!--end selection -->
+        </button>
       </div>
     </template>
     <!-- default grid cells -->
@@ -167,7 +181,10 @@
         :class="merged.mergedId"
       >
       {{merged}}
-      <button @click="unMerge(merged.mergedId)">Un Merge?</button>
+        <button 
+          @click="unMerge(merged.mergedId)">
+          Un Merge?
+        </button>
       </div>
     </template>
     <!-- display merged cells -->
@@ -206,12 +223,12 @@
     justify-items:center;
     align-items:center;
     padding:.2rem;
-    height:100%;
+    height:90vh;
     gap: .2rem;
 
     &__box {
       //background-color: #e7feff;
-      border: 2px dotted purple;
+      border: 1px dotted purple;
       height:100%;
       min-height: 50px;
       width:100%;
