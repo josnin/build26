@@ -5,9 +5,13 @@
   
   const defaultGridCell = ref([]);
   const mergedCells = ref([]);
-  const btnStart = ref(true);
-  const btnEnd = ref(false);
   const grid = useGrid();
+
+  const isSelected = ref(false);
+
+  // start & end cells selection
+  const isStarted = ref(true)
+  const isEnded = ref(false)
 
   const props = defineProps({
     colNum: {
@@ -55,49 +59,51 @@
 
   }
 
-  const setRowColStart = (rowStart, colStart) => {
+  const setRowColStart = (...args) => {
+    const [rowStart, colStart] = args;
     console.log(rowStart, colStart)
     grid.setGrid({
         rowStart,
         colStart,
         classId: (+new Date).toString(36)
     })
-    btnStart.value = false;
-    btnEnd.value = true;
+    isStarted.value = false;
+    isEnded.value = true;
   }
 
 
   const clearActiveSelection = () => {
     // clear active selection
-    selectedGridCell.value.map(
+    defaultGridCell.value.map(
       e => {
         e.selected = false;
       }
     )
   }
 
-  const highlightSelectedCells = (rowStart, colStart) => {
-    const rowNumbers = range(currentRowStart.value, rowStart);
-    const colNumbers = range(currentColStart.value, colStart);
+  const highlightSelectedCells = (...args) => {
+    if (isSelected.value) {
+      const [rowStart, colStart] = args;
+      const rowNums = range(currentRowStart.value, rowStart);
+      const colNums = range(currentColStart.value, colStart);
 
-    clearActiveSelection();
+      clearActiveSelection();
 
-    // highlight selected value
-    rowNumbers.forEach(r => {
-      colNumbers.forEach(c => {
-        defaultGridCell.value.filter(e => e.rowStart === r && e.colStart === c).map(
-          e => e.selected = true
-        )
+      // highlight selected value
+      rowNums.forEach(r => {
+        colNums.forEach(c => {
+          defaultGridCell.value.filter(e => e.rowStart === r && e.colStart === c).map(
+            e => e.selected = true
+          )
+        })
       })
-    })
 
+    }
   }
 
   const mergeCell = () => {
 
-    //const rowEnd = selectedGridCell.value.reduce((a,b)=>defaultGridCell.value.rowEnd>b.rowEnd?a:b).rowEnd
-    //const colEnd = selectedGridCell.value.reduce((a,b)=>defaultGridCell.value.colEnd>b.colEnd?a:b).colEnd
-
+    // this will unselect grid in the defaultGridCell
     selectedGridCell.value.map(e => {
       e.merged = true;
       e.selected = false;
@@ -116,18 +122,19 @@
 
   }
 
-  const setRowColEnd = (rowStart, rowEnd, colStart, colEnd) => {
+  const setRowColEnd = (...args) => {
+    const [rowStart, rowEnd, colStart, colEnd] = args;
     grid.setGrid({
       rowEnd,
       colEnd
     })
-    highlightSelectedCells(rowStart, colStart);
     mergeCell();
-    btnStart.value = true;
-    btnEnd.value = false;
+    isStarted.value = true;
+    isEnded.value = false;
   }
 
-  const unMerge = (mergedId) => {
+  const unMerge = (...args) => {
+    const [mergedId] = args;
     mergedCells.value = mergedCells.value.filter(e => e.mergedId != mergedId);
     defaultGridCell.value.filter(e => e.mergedId === mergedId).map(e => {
       e.merged = false;
@@ -156,16 +163,17 @@
         class="layout__box"
         :class="[{ selected: g.selected  }, g.class]"
         v-if="g.merged==false"
+        @mouseover="highlightSelectedCells(g.rowStart, g.colStart)" 
       >
-        {{g}}
+        <!-- {{g}} {{isStarted}} {{g.selected}} -->
         <button 
-          v-if="btnStart" 
-          @click="setRowColStart(g.rowStart, g.colStart)">
+          v-if="isStarted" 
+          @click="setRowColStart(g.rowStart, g.colStart); isSelected=true">
           Start <!-- start selection -->
         </button>
         <button 
-          v-if="btnEnd" 
-          @click="setRowColEnd(g.rowStart, g.rowEnd, g.colStart, g.colEnd)">
+          v-if="isEnded" 
+          @click="setRowColEnd(g.rowStart, g.rowEnd, g.colStart, g.colEnd); isSelected=false">
           End  <!--end selection -->
         </button>
       </div>
@@ -223,12 +231,12 @@
     justify-items:center;
     align-items:center;
     padding:.2rem;
-    height:90vh;
-    gap: .2rem;
+    height:100%;
+    //gap: .1rem;
 
     &__box {
       //background-color: #e7feff;
-      border: 1px dotted purple;
+      border:1px dotted rgb(26, 115, 232);
       height:100%;
       min-height: 50px;
       width:100%;
@@ -237,22 +245,23 @@
       align-items:center;
       padding: .2rem;
       grid-auto-flow: column;
+      resize: both;
     }
 
-    &__box:hover {
+ /*   &__box:hover {
       cursor:grab;
       span:hover {
         cursor:pointer;
         border:1px solid red;
       }
-    }
+    } */
 
 
 
   }
 
   .selected {
-    background-color: red;
+    border:1px solid rgb(26, 115, 232);
   }
 
 
