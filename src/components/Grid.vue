@@ -59,6 +59,8 @@
 
   }
 
+
+
   const setRowColStart = (...args) => {
     const [rowStart, colStart] = args;
     console.log(rowStart, colStart)
@@ -67,8 +69,7 @@
         colStart,
         classId: (+new Date).toString(36)
     })
-    isStarted.value = false;
-    isEnded.value = true;
+    displayEndBtn();
   }
 
 
@@ -81,14 +82,17 @@
     )
   }
 
-  const highlightSelectedCells = (...args) => {
-    if (isSelected.value) {
-      const [rowStart, colStart] = args;
-      const rowNums = range(currentRowStart.value, rowStart);
-      const colNums = range(currentColStart.value, colStart);
+  const getRowNums = (rowStart) => {
+      // range is broken when start value is greater than end value
+      return currentRowStart.value > rowStart ? range(rowStart, currentColStart.value) : range(currentRowStart.value, rowStart);
+  }
 
-      clearActiveSelection();
+  const getColNums = (colStart) => {
+      // range is broken when start value is greater than end value
+      return currentColStart.value > colStart ? range(colStart, currentColStart.value) : range(currentColStart.value, colStart);
+  }
 
+  const setGridSelection = (rowNums, colNums) => {
       // highlight selected value
       rowNums.forEach(r => {
         colNums.forEach(c => {
@@ -97,12 +101,46 @@
           )
         })
       })
+  }
+
+  const highlightSelectedCells = (...args) => {
+    if (isSelected.value) {
+      const [rowStart, colStart] = args;
+
+      const rowNums = getRowNums(rowStart)
+      const colNums = getColNums(colStart)
+
+      clearActiveSelection();
+      setGridSelection(rowNums, colNums)
 
     }
   }
 
-  const mergeCell = () => {
+  const getGridArea = (selectedGridCell) => {
+    const rowStart = selectedGridCell.value.reduce(
+        (previousVal, currentVal) => 
+          previousVal.rowStart > currentVal.rowStart ? currentVal : previousVal 
+      ).rowStart
+    const colStart = selectedGridCell.value.reduce(
+        (previousVal, currentVal) => 
+          previousVal.colStart > currentVal.colStart ? currentVal : previousVal 
+      ).colStart
+    const rowEnd = selectedGridCell.value.reduce(
+        (previousVal, currentVal) => 
+          previousVal.rowEnd > currentVal.rowEnd ? previousVal : currentVal
+      ).rowEnd
+    const colEnd = selectedGridCell.value.reduce(
+        (previousVal, currentVal) => 
+          previousVal.colEnd > currentVal.colEnd ? previousVal : currentVal
+      ).colEnd
 
+    //console.log(`${rowStart} / ${colStart} / ${rowEnd} / ${colEnd}`);
+
+    return `${rowStart} / ${colStart} / ${rowEnd} / ${colEnd}`;
+
+  }
+
+  const unSelectGridSelection = () => {
     // this will unselect grid in the defaultGridCell
     selectedGridCell.value.map(e => {
       e.merged = true;
@@ -110,16 +148,33 @@
       e.mergedId = currentClassId.value;
     });
 
+  }
+
+  const mergeCell = () => {
+
+    const gridArea = getGridArea(selectedGridCell);
+    unSelectGridSelection()
+
     mergedCells.value.push(
       { 
         mergedId: currentClassId.value, 
-        gridArea: `${currentRowStart.value} / ${currentColStart.value} / ${currentRowEnd.value} / ${currentColEnd.value}`,
+        gridArea,
         justifyItems: 'center',
         alignItems: 'center',
         height: '100%'
       }
     )
 
+  }
+
+  const displayStartBtn = () => {
+    isStarted.value = true;
+    isEnded.value = false;
+  }
+
+  const displayEndBtn = () => {
+    isStarted.value = false;
+    isEnded.value = true;
   }
 
   const setRowColEnd = (...args) => {
@@ -129,8 +184,7 @@
       colEnd
     })
     mergeCell();
-    isStarted.value = true;
-    isEnded.value = false;
+    displayStartBtn();
   }
 
   const unMerge = (...args) => {
@@ -165,7 +219,7 @@
         v-if="g.merged==false"
         @mouseover="highlightSelectedCells(g.rowStart, g.colStart)" 
       >
-        <!-- {{g}} {{isStarted}} {{g.selected}} -->
+         {{g}} {{isStarted}} {{g.selected}} 
         <button 
           v-if="isStarted" 
           @click="setRowColStart(g.rowStart, g.colStart); isSelected=true">
