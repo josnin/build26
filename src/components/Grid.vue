@@ -6,6 +6,7 @@
   const defaultGridCell = ref([]);
   const mergedCells = ref([]);
   const grid = useGrid();
+  const gridTemplateColumns = ref('1fr 1fr')
 
   const isSelected = ref(false);
 
@@ -198,6 +199,12 @@
   }
 
 
+  const editGridWidth = () => {
+    gridTemplateColumns.value = '2fr 1fr';
+    console.log('click me')
+  }
+
+
 
 
 
@@ -229,6 +236,10 @@
           @click="setRowColEnd(g.rowStart, g.rowEnd, g.colStart, g.colEnd); isSelected=false">
           End  <!--end selection -->
         </button>
+        <span @click="editGridWidth()" class="edit-grid-width" title="Ëdit Grid Width"><!--edit grid width --></span>
+        <span class="edit-grid-height" title="Ëdit Grid Height"><!--edit grid height --></span>
+        <span class="edit-gap-row" title="Ëdit Grid Gap row"><!--edit grid gap row--></span>
+        <span class="edit-gap-column" title="Ëdit Grid Gap column"><!--edit grid gap column--></span>
       </div>
     </template>
     <!-- default grid cells -->
@@ -271,7 +282,7 @@
 
   .layout {
     display: grid;
-    grid-template-columns: repeat(v-bind('props.colNum'), 1fr) ;
+    grid-template-columns: v-bind('gridTemplateColumns'); // repeat(v-bind('props.colNum'), 1fr) ;
     grid-template-rows: repeat(v-bind('props.rowNum'), 1fr) ;
     justify-items:center;
     align-items:center;
@@ -280,7 +291,7 @@
     //gap: .1rem;
 
     &__box {
-      border:1px dotted rgb(26, 115, 232);
+      border:.5px solid rgb(26, 115, 232);
       height:100%;
       min-height: 50px;
       width:100%;
@@ -289,12 +300,60 @@
       align-items:center;
       padding: .2rem;
       grid-auto-flow: row;
+      position: relative;
     }
 
   }
 
   .selected {
     border:1px solid rgb(26, 115, 232);
+  }
+
+  .drag-handler-circle {
+    pointer-events: auto;
+    background: white; 
+    position: absolute;
+    border-radius: 50%;
+    z-index: 3;
+    opacity: 0.6;
+    width:6px;
+    height:6px;
+  }
+
+  .edit-grid-height {
+    border: 2px solid rgb(26, 115, 232);
+    @extend .drag-handler-circle;
+    cursor: ns-resize;
+    left: 45%;
+    top: 95%;
+    width:7px;
+    height:7px;
+  }
+
+  .edit-grid-width {
+    border: 2px solid rgb(26, 115, 232);
+    @extend .drag-handler-circle;
+    cursor: ew-resize;
+    left: 99.6%;
+    top: 30%;
+    width:7px;
+    height:7px;
+  }
+
+  .edit-gap-row {
+    border: 1px solid rgb(26, 115, 232);
+    @extend .drag-handler-circle;
+    cursor: ns-resize;
+    left: 25%;
+    top: 97%;
+  }
+
+  .edit-gap-column {
+    border: 1px solid rgb(26, 115, 232);
+    @extend .drag-handler-circle;
+    cursor: ew-resize;
+    left: 99.6%;
+    top: 70%;
   }
 
 
