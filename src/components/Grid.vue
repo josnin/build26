@@ -206,7 +206,6 @@
 <template>
   <div 
     class="layout"
-    style="grid-template-columns: 1fr 1fr"
   >
 
     <!-- default grid cells -->
@@ -262,14 +261,6 @@
         }
 
       </template>
-    <!--  <template
-        v-for="g of defaultGridCell"
-      >
-        .{{g.class}}:hover {
-            border-top:1px solid red;
-            grid-area: 1 / 1 / 2 / 3;
-        }
-      </template> -->
     </component>
     <!-- generate style -->
 
@@ -280,8 +271,8 @@
 
   .layout {
     display: grid;
-    //grid-template-columns: repeat(v-bind('props.colNum'), auto) ;
-    grid-template-rows: repeat(v-bind('props.rowNum'), auto) ;
+    grid-template-columns: repeat(v-bind('props.colNum'), 1fr) ;
+    grid-template-rows: repeat(v-bind('props.rowNum'), 1fr) ;
     justify-items:center;
     align-items:center;
     padding:.2rem;
@@ -289,7 +280,6 @@
     //gap: .1rem;
 
     &__box {
-      //background-color: #e7feff;
       border:1px dotted rgb(26, 115, 232);
       height:100%;
       min-height: 50px;
@@ -298,19 +288,8 @@
       justify-items: center;
       align-items:center;
       padding: .2rem;
-      grid-auto-flow: column;
-      resize: both;
+      grid-auto-flow: row;
     }
-
- /*   &__box:hover {
-      cursor:grab;
-      span:hover {
-        cursor:pointer;
-        border:1px solid red;
-      }
-    } */
-
-
 
   }
 
