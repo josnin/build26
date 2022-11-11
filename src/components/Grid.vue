@@ -7,12 +7,17 @@
   const mergedCells = ref([]);
   const grid = useGrid();
   const gridTemplateColumns = ref('1fr 1fr')
+  const refId = ref([])
+  const gridPage = ref();
 
   const isSelected = ref(false);
 
   // start & end cells selection
   const isStarted = ref(true)
   const isEnded = ref(false)
+
+  // start & end resize heigh / width
+  const isResize = ref(false)
 
   const props = defineProps({
     colNum: {
@@ -36,17 +41,18 @@
   const range = (min, max) => Array.from({ length: max - min + 1 }, (_, i) => min + i);
 
   onMounted(() => {
-    genDefaultGridCell()
+    genDefaultGridCell();
+    getGridTemplateColumns();
   })
 
   const genDefaultGridCell = () => {
-    //const classId =  (+new Date).toString(36);
+    // @todo move to store
     const rowNumbers = range(1, props.rowNum);
     const colNumbers = range(1, props.colNum);
     rowNumbers.forEach(r => {
       colNumbers.forEach(c => {
         defaultGridCell.value.push({
-          class: `gc-${r}${c}`,
+          class: `gc${r}${c}`,
           rowStart: r,
           colStart: c,
           rowEnd: r + 1,
@@ -199,20 +205,41 @@
   }
 
 
-  const editGridWidth = () => {
-    gridTemplateColumns.value = '2fr 1fr';
-    console.log('click me')
+  const getGridTemplateColumns = () => {
+    const tmp = [];
+    Array(props.colNum).fill(1).forEach((fr) => { 
+      tmp.push(`${fr}fr`)
+    } )
+    gridTemplateColumns.value = tmp.join(' ');
   }
 
+  const startColGridResize = () => {
+    isResize.value = true;
+    gridPage.value.style.cursor = 'ew-resize'; // horizontal drag
+  }
 
+  const endColGridResize = () => {
+    isResize.value = false;
+    gridPage.value.style.cursor = 'auto';
+  }
 
+  const onColGridResize = (evt) => {
+    // @todo how to handle more than 2 cols?
+    if (isResize.value) {
+      const leftColWidth = evt.clientX - 88; // 88 calibrate mouse pointer
+      const rightColWidth = gridPage.value.clientWidth - leftColWidth // parseFloat(refId.value[`gc${colStart}${colEnd}`].clientWidth);
+      gridTemplateColumns.value = `${leftColWidth}px ${rightColWidth}px`;
+      //gridPage.value.style.gridTemplateColumns = `${evt.clientX}px ${rightColWidth}px`;
+    }
 
+  }
 
 </script>
 
 <template>
   <div 
-    class="layout"
+    class="grid-page"
+    ref="gridPage"
   >
 
     <!-- default grid cells -->
@@ -220,10 +247,13 @@
       v-for="g of defaultGridCell"
     >
       <div
-        class="layout__box"
+        class="grid-page__box"
         :class="[{ selected: g.selected  }, g.class]"
         v-if="g.merged==false"
         @mouseover="highlightSelectedCells(g.rowStart, g.colStart)" 
+        @mousemove="onColGridResize(g.class, $event, g.colStart, g.colEnd)" 
+        @mouseup="endColGridResize()"
+        :ref="(el) => refId[g.class] = el"
       >
          {{g}} {{isStarted}} {{g.selected}} 
         <button 
@@ -236,7 +266,11 @@
           @click="setRowColEnd(g.rowStart, g.rowEnd, g.colStart, g.colEnd); isSelected=false">
           End  <!--end selection -->
         </button>
-        <span @click="editGridWidth()" class="edit-grid-width" title="Ëdit Grid Width"><!--edit grid width --></span>
+        <span 
+            @mousedown="startColGridResize()" 
+            class="edit-grid-width" 
+            title="Ëdit Grid Width"
+        ><!--edit grid width --></span>
         <span class="edit-grid-height" title="Ëdit Grid Height"><!--edit grid height --></span>
         <span class="edit-gap-row" title="Ëdit Grid Gap row"><!--edit grid gap row--></span>
         <span class="edit-gap-column" title="Ëdit Grid Gap column"><!--edit grid gap column--></span>
@@ -249,7 +283,7 @@
       v-for="merged of mergedCells"
     >
       <div
-        class="layout__box"
+        class="grid-page__box"
         :class="merged.mergedId"
       >
       {{merged}}
@@ -280,13 +314,13 @@
 
 <style lang="scss" scoped>
 
-  .layout {
+  .grid-page {
     display: grid;
     grid-template-columns: v-bind('gridTemplateColumns'); // repeat(v-bind('props.colNum'), 1fr) ;
     grid-template-rows: repeat(v-bind('props.rowNum'), 1fr) ;
     justify-items:center;
     align-items:center;
-    padding:.2rem;
+    //padding:.2rem; -->> @todo this have effect in page clientWidth when resizing
     height:100%;
     //gap: .1rem;
 
@@ -314,7 +348,7 @@
     background: white; 
     position: absolute;
     border-radius: 50%;
-    z-index: 3;
+    z-index: 1000;
     opacity: 0.6;
     width:6px;
     height:6px;
