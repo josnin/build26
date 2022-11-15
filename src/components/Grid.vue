@@ -206,11 +206,7 @@
 
 
   const getGridTemplateColumns = () => {
-    const tmp = [];
-    Array(props.colNum).fill(1).forEach((fr) => { 
-      tmp.push(`${fr}fr`)
-    } )
-    gridTemplateColumns.value = tmp.join(' ');
+    gridTemplateColumns.value = Array(props.colNum).fill('1fr').join(' ');
   }
 
   const startColGridResize = () => {
