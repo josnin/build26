@@ -211,7 +211,7 @@
 
   const startColGridResize = () => {
     isResize.value = true;
-    gridPage.value.style.cursor = 'ew-resize'; // horizontal drag
+    gridPage.value.style.cursor = 'col-resize'; // horizontal drag
   }
 
   const endColGridResize = () => {
@@ -353,7 +353,7 @@
   .edit-grid-height {
     border: 2px solid rgb(26, 115, 232);
     @extend .drag-handler-circle;
-    cursor: ns-resize;
+    cursor: row-resize;
     left: 45%;
     top: 95%;
     width:7px;
@@ -363,7 +363,7 @@
   .edit-grid-width {
     border: 2px solid rgb(26, 115, 232);
     @extend .drag-handler-circle;
-    cursor: ew-resize;
+    cursor: col-resize;
     left: 99.6%;
     top: 30%;
     width:7px;
@@ -373,7 +373,7 @@
   .edit-gap-row {
     border: 1px solid rgb(26, 115, 232);
     @extend .drag-handler-circle;
-    cursor: ns-resize;
+    cursor: row-resize;
     left: 25%;
     top: 97%;
   }
@@ -381,7 +381,7 @@
   .edit-gap-column {
     border: 1px solid rgb(26, 115, 232);
     @extend .drag-handler-circle;
-    cursor: ew-resize;
+    cursor: col-resize;
     left: 99.6%;
     top: 70%;
   }
