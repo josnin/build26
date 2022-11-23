@@ -22,7 +22,7 @@
   const props = defineProps({
     colNum: {
       type: Number,
-      default: 2
+      default: 3
     },
     rowNum: {
       type: Number,
@@ -209,7 +209,7 @@
     gridTemplateColumns.value = Array(props.colNum).fill('1fr').join(' ');
   }
 
-  const startColGridResize = () => {
+  const startColGridResize = (evt) => {
     isResize.value = true;
     gridPage.value.style.cursor = 'col-resize'; // horizontal drag
   }
@@ -219,13 +219,46 @@
     gridPage.value.style.cursor = 'auto';
   }
 
-  const onColGridResize = (evt) => {
+  const getOldColWidth = () => {
+      const colWidth = []; // @todo use store
+      const colNum = range(1, props.colNum);
+      colNum.forEach( (c, index) => {
+        colWidth[index] = refId.value[`gc1${c}`].clientWidth;
+      })
+
+      return colWidth;
+
+  }
+
+  const getNewColWidth = (evt, colStart, colWidth) => {
+    let newColWidth = evt.clientX - 89;
+    if (colStart > 1) {
+      newColWidth = evt.clientX - 89; 
+      const colRange = [...Array(colStart - 1).keys()];
+      colRange.forEach( e => {
+        newColWidth -= colWidth[e];
+      })
+    }
+
+    return newColWidth;
+
+  }
+
+  const onColGridResize = (evt, colStart, colEnd, cls) => {
     // @todo how to handle more than 2 cols?
     if (isResize.value) {
-      const leftColWidth = evt.clientX - 88; // 88 calibrate mouse pointer
-      const rightColWidth = gridPage.value.clientWidth - leftColWidth // parseFloat(refId.value[`gc${colStart}${colEnd}`].clientWidth);
-      gridTemplateColumns.value = `${leftColWidth}px ${rightColWidth}px`;
-      //gridPage.value.style.gridTemplateColumns = `${evt.clientX}px ${rightColWidth}px`;
+
+      const colWidth = getOldColWidth(); // @todo use store
+      const newColWidth = getNewColWidth(
+        evt,
+        colStart,
+        colWidth
+      );
+
+       const newVal = gridTemplateColumns.value.split(' ');
+       newVal[colStart - 1] = `${newColWidth}px`
+       gridTemplateColumns.value = newVal.join(' '); // `1fr ${leftColWidth}px 1fr`;
+
     }
 
   }
@@ -247,8 +280,8 @@
         :class="[{ selected: g.selected  }, g.class]"
         v-if="g.merged==false"
         @mouseover="highlightSelectedCells(g.rowStart, g.colStart)" 
-        @mousemove="onColGridResize(g.class, $event, g.colStart, g.colEnd)" 
-        @mouseup="endColGridResize()"
+        @mousemove.prevent="onColGridResize($event, g.colStart, g.colEnd, g.class)" 
+        @mouseup.prevent="endColGridResize()"
         :ref="(el) => refId[g.class] = el"
       >
          {{g}} {{isStarted}} {{g.selected}} 
@@ -263,7 +296,7 @@
           End  <!--end selection -->
         </button>
         <span 
-            @mousedown="startColGridResize()" 
+            @mousedown.prevent="startColGridResize($event)" 
             class="edit-grid-width" 
             title="Ëdit Grid Width"
         ><!--edit grid width --></span>
@@ -318,7 +351,7 @@
     align-items:center;
     //padding:.2rem; -->> @todo this have effect in page clientWidth when resizing
     height:100%;
-    //gap: .1rem;
+    gap: 1rem;
 
     &__box {
       border:.5px solid rgb(26, 115, 232);
@@ -328,7 +361,7 @@
       display: grid;
       justify-items: center;
       align-items:center;
-      padding: .2rem;
+      //padding: .2rem;
       grid-auto-flow: row;
       position: relative;
     }
@@ -346,8 +379,8 @@
     border-radius: 50%;
     z-index: 1000;
     opacity: 0.6;
-    width:6px;
-    height:6px;
+    width:7px;
+    height:7px;
   }
 
   .edit-grid-height {
