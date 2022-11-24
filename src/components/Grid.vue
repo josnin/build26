@@ -230,34 +230,31 @@
 
   }
 
-  const getNewColWidth = (evt, colStart, colWidth) => {
+  const updateGridTemplateColumns = (evt, resizeColNum, colWidth) => {
     let newColWidth = evt.clientX - 89;
-    if (colStart > 1) {
+    if (resizeColNum > 1) {
       newColWidth = evt.clientX - 89; 
-      const colRange = [...Array(colStart - 1).keys()];
+      const colRange = [...Array(resizeColNum - 1).keys()];
       colRange.forEach( e => {
         newColWidth -= colWidth[e];
       })
     }
 
-    return newColWidth;
+    const newVal = gridTemplateColumns.value.split(' ');
+    newVal[resizeColNum - 1] = `${newColWidth}px`
+    gridTemplateColumns.value = newVal.join(' '); // `1fr ${leftColWidth}px 1fr`;
+
 
   }
 
-  const onColGridResize = (evt, colStart, colEnd, cls) => {
-    // @todo how to handle more than 2 cols?
+  const onColGridResize = (evt, resizeColNum) => {
     if (isResize.value) {
 
       const colWidth = getOldColWidth(); // @todo use store
-      const newColWidth = getNewColWidth(
-        evt,
-        colStart,
-        colWidth
-      );
 
-       const newVal = gridTemplateColumns.value.split(' ');
-       newVal[colStart - 1] = `${newColWidth}px`
-       gridTemplateColumns.value = newVal.join(' '); // `1fr ${leftColWidth}px 1fr`;
+      updateGridTemplateColumns(evt,
+        resizeColNum, colWidth);
+
 
     }
 
@@ -280,7 +277,7 @@
         :class="[{ selected: g.selected  }, g.class]"
         v-if="g.merged==false"
         @mouseover="highlightSelectedCells(g.rowStart, g.colStart)" 
-        @mousemove.prevent="onColGridResize($event, g.colStart, g.colEnd, g.class)" 
+        @mousemove.prevent="onColGridResize($event, g.colStart)" 
         @mouseup.prevent="endColGridResize()"
         :ref="(el) => refId[g.class] = el"
       >
