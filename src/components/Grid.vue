@@ -219,41 +219,40 @@
     gridPage.value.style.cursor = 'auto';
   }
 
-  const getOldColWidth = () => {
-      const colWidth = []; // @todo use store
-      const colNum = range(1, props.colNum);
-      colNum.forEach( (c, index) => {
-        colWidth[index] = refId.value[`gc1${c}`].clientWidth;
+  const getColWidths = () => {
+      const colWidths = []; // @todo use store
+      const colNums = range(1, props.colNum);
+      colNums.forEach( (c, index) => {
+        colWidths[index] = refId.value[`gc1${c}`].clientWidth;
       })
 
-      return colWidth;
+      return colWidths;
 
   }
 
-  const updateGridTemplateColumns = (evt, resizeColNum, colWidth) => {
+  const updateGridTemplateColumns = (evt, colNum, colWidths) => {
     let newColWidth = evt.clientX - 89;
-    if (resizeColNum > 1) {
-      newColWidth = evt.clientX - 89; 
-      const colRange = [...Array(resizeColNum - 1).keys()];
+    if (colNum > 1) {
+      const colRange = [...Array(colNum - 1).keys()];
       colRange.forEach( e => {
-        newColWidth -= colWidth[e];
+        newColWidth -= colWidths[e];
       })
     }
 
     const newVal = gridTemplateColumns.value.split(' ');
-    newVal[resizeColNum - 1] = `${newColWidth}px`
+    newVal[colNum - 1] = `${newColWidth}px`
     gridTemplateColumns.value = newVal.join(' '); // `1fr ${leftColWidth}px 1fr`;
 
 
   }
 
-  const onColGridResize = (evt, resizeColNum) => {
+  const onColGridResize = (evt, colNum) => {
     if (isResize.value) {
 
-      const colWidth = getOldColWidth(); // @todo use store
+      const colWidths = getColWidths(); // @todo use store
 
       updateGridTemplateColumns(evt,
-        resizeColNum, colWidth);
+        colNum, colWidths);
 
 
     }
