@@ -31,11 +31,11 @@
     },
   });
 
-  const currentRowStart = computed( () =>  store.state.grid.grid.rowStart);
-  const currentColStart = computed( () => store.state.grid.grid.colStart);
-  const currentRowEnd = computed( () =>  store.state.grid.grid.rowEnd);
-  const currentColEnd = computed( () => store.state.grid.grid.colEnd);
-  const currentClassId = computed( () => store.state.grid.grid.classId);
+  const currentRowStart = computed( () =>  store.state.grid.grid2.rowStart);
+  const currentColStart = computed( () => store.state.grid.grid2.colStart);
+  const currentRowEnd = computed( () =>  store.state.grid.grid2.rowEnd);
+  const currentColEnd = computed( () => store.state.grid.grid2.colEnd);
+  const currentClassId = computed( () => store.state.grid.grid2.classId);
   const selectedGridCell = computed( () => defaultGridCell.value.filter(e => e.selected == true) );
 
   // @todo move to utils?
@@ -71,11 +71,15 @@
 
   const setRowColStart = (...args) => {
     const [rowStart, colStart] = args;
-    console.log(rowStart, colStart)
     grid.setGrid({
         rowStart,
         colStart,
         classId: (+new Date).toString(36)
+    })
+    grid.create({
+      rowStart,
+      colStart,
+      classId: (+new Date).toString(36)
     })
     displayEndBtn();
   }
