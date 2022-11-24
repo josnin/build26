@@ -18,6 +18,7 @@
 
   // start & end resize heigh / width
   const isResize = ref(false)
+  const resizeColNum = ref(0);
 
   const props = defineProps({
     colNum: {
@@ -209,13 +210,15 @@
     gridTemplateColumns.value = Array(props.colNum).fill('1fr').join(' ');
   }
 
-  const startColGridResize = (evt) => {
+  const startColGridResize = (evt, colNum) => {
     isResize.value = true;
+    resizeColNum.value = colNum;
     gridPage.value.style.cursor = 'col-resize'; // horizontal drag
   }
 
   const endColGridResize = () => {
     isResize.value = false;
+    resizeColNum.value = 0;
     gridPage.value.style.cursor = 'auto';
   }
 
@@ -230,7 +233,8 @@
 
   }
 
-  const updateGridTemplateColumns = (evt, colNum, colWidths) => {
+  const updateGridTemplateColumns = (evt, colWidths) => {
+    const colNum = resizeColNum.value;
     let newColWidth = evt.clientX - 89;
     if (colNum > 1) {
       const colRange = [...Array(colNum - 1).keys()];
@@ -246,13 +250,12 @@
 
   }
 
-  const onColGridResize = (evt, colNum) => {
+  const onColGridResize = (evt) => {
     if (isResize.value) {
 
       const colWidths = getColWidths(); // @todo use store
 
-      updateGridTemplateColumns(evt,
-        colNum, colWidths);
+      updateGridTemplateColumns(evt, colWidths);
 
 
     }
@@ -276,7 +279,7 @@
         :class="[{ selected: g.selected  }, g.class]"
         v-if="g.merged==false"
         @mouseover="highlightSelectedCells(g.rowStart, g.colStart)" 
-        @mousemove.prevent="onColGridResize($event, g.colStart)" 
+        @mousemove.prevent="onColGridResize($event)" 
         @mouseup.prevent="endColGridResize()"
         :ref="(el) => refId[g.class] = el"
       >
@@ -292,7 +295,7 @@
           End  <!--end selection -->
         </button>
         <span 
-            @mousedown.prevent="startColGridResize($event)" 
+            @mousedown.prevent="startColGridResize($event, g.colStart)" 
             class="edit-grid-width" 
             title="Ëdit Grid Width"
         ><!--edit grid width --></span>
@@ -347,7 +350,7 @@
     align-items:center;
     //padding:.2rem; -->> @todo this have effect in page clientWidth when resizing
     height:100%;
-    gap: 1rem;
+    //gap: 1rem;
 
     &__box {
       border:.5px solid rgb(26, 115, 232);
