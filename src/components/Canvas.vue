@@ -1,7 +1,7 @@
 <script setup>
   import { ref, onMounted, createApp, computed } from 'vue';
   import Button from '@/components/Button.vue'
-  import Grid from '@/components/Grid.vue'
+  import GridEditor from '@/views/GridEditor.vue'
   import Box from '@/components/Box.vue'
   import useSite  from '@/use/useSite';
   import store from '@/store';
@@ -48,7 +48,7 @@
       <!-- Layout -->
       <div
         draggable
-        @dragstart="onDrag($event, Grid)"
+        @dragstart="onDrag($event, GridEditor)"
         class="menu" 
         >
         Grid

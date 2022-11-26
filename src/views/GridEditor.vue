@@ -65,7 +65,6 @@
   }
 
 
-
   const setRowColStart = (...args) => {
     const [rowStart, colStart] = args;
     currentRowStart.value = rowStart;

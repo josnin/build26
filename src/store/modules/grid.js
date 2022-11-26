@@ -3,15 +3,15 @@ import types from '@/store/types'
 const grid = {
   namespaced: true,
   state: {
-    grid2: {},
-    grid: []
+    grid: {},
   },
   mutations: {
     [types.SET_GRID_OK](state, val) {
-        state.grid2 = val;
+        state.grid = val;
+        console.log(val)
     },
     [types.CREATE_GRID_OK](state, { status, data }) {
-      console.log(data)
+      console.log('CREATE GRID OK', data)
       state.grid.push(data)
       console.log(state.grid)
     },
