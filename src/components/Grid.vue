@@ -1,7 +1,6 @@
 <script setup>
   import { computed, onMounted, ref } from 'vue';
   import useGrid  from '@/use/useGrid';
-  import store from '@/store';
   
   const defaultGridCell = ref([]);
   const mergedCells = ref([]);
@@ -31,11 +30,9 @@
     },
   });
 
-  const currentRowStart = computed( () =>  store.state.grid.grid2.rowStart);
-  const currentColStart = computed( () => store.state.grid.grid2.colStart);
-  const currentRowEnd = computed( () =>  store.state.grid.grid2.rowEnd);
-  const currentColEnd = computed( () => store.state.grid.grid2.colEnd);
-  const currentClassId = computed( () => store.state.grid.grid2.classId);
+  const currentRowStart = ref(null)
+  const currentColStart = ref(null)
+  const currentClassId = ref(null)
   const selectedGridCell = computed( () => defaultGridCell.value.filter(e => e.selected == true) );
 
   // @todo move to utils?
@@ -71,16 +68,9 @@
 
   const setRowColStart = (...args) => {
     const [rowStart, colStart] = args;
-    grid.setGrid({
-        rowStart,
-        colStart,
-        classId: (+new Date).toString(36)
-    })
-    grid.create({
-      rowStart,
-      colStart,
-      classId: (+new Date).toString(36)
-    })
+    currentRowStart.value = rowStart;
+    currentColStart.value = colStart
+    currentClassId.value = (+new Date).toString(36)
     displayEndBtn();
   }
 
@@ -190,11 +180,7 @@
   }
 
   const setRowColEnd = (...args) => {
-    const [rowStart, rowEnd, colStart, colEnd] = args;
-    grid.setGrid({
-      rowEnd,
-      colEnd
-    })
+    //const [rowStart, rowEnd, colStart, colEnd] = args;
     mergeCell();
     displayStartBtn();
   }
