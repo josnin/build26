@@ -1,7 +1,7 @@
 <script setup>
   import { computed, onMounted, ref } from 'vue';
   import GridDefault from '@/components/GridDefault.vue'
-  import { refId }  from '@/store'
+  import { refId, gColNum, gRowNum }  from '@/store'
   
   const defaultGridCell = ref([]);
   const mergedCells = ref([]);
@@ -18,16 +18,16 @@
   const isResize = ref(false)
   const resizeColNum = ref(0);
 
-  const props = defineProps({
-    colNum: {
-      type: Number,
-      default: 3
-    },
-    rowNum: {
-      type: Number,
-      default: 5
-    },
-  });
+  //const props = defineProps({
+  //  colNum: {
+  //    type: Number,
+  //    default: 3
+  //  },
+  //  rowNum: {
+  //    type: Number,
+  //    default: 5
+  //  },
+  //});
 
   const currentRowStart = ref(null)
   const currentColStart = ref(null)
@@ -44,8 +44,8 @@
 
   const genDefaultGridCell = () => {
     // @todo move to store
-    const rowNumbers = range(1, props.rowNum);
-    const colNumbers = range(1, props.colNum);
+    const rowNumbers = range(1, gRowNum.value);
+    const colNumbers = range(1, gColNum.value);
     rowNumbers.forEach(r => {
       colNumbers.forEach(c => {
         defaultGridCell.value.push({
@@ -195,7 +195,7 @@
 
 
   const getGridTemplateColumns = () => {
-    gridTemplateColumns.value = Array(props.colNum).fill('1fr').join(' ');
+    gridTemplateColumns.value = Array(gColNum.value).fill('1fr').join(' ');
   }
 
   const startColGridResize = (colNum) => {
@@ -212,7 +212,7 @@
 
   const getColWidths = () => {
       const colWidths = []; // @todo use store
-      const colNums = range(1, props.colNum);
+      const colNums = range(1, gColNum.value);
       colNums.forEach( (c, index) => {
         colWidths[index] = refId.value[`gc1${c}`].clientWidth;
       })
@@ -312,8 +312,8 @@
 
   .grid-page {
     display: grid;
-    grid-template-columns: v-bind('gridTemplateColumns'); // repeat(v-bind('props.colNum'), 1fr) ;
-    grid-template-rows: repeat(v-bind('props.rowNum'), 1fr) ;
+    grid-template-columns: v-bind('gridTemplateColumns'); 
+    grid-template-rows: repeat(v-bind('gRowNum'), 1fr) ;
     justify-items:center;
     align-items:center;
     //padding:.2rem; -->> @todo this have effect in page clientWidth when resizing
