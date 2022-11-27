@@ -1,28 +1,22 @@
 
 <script setup>
-  import { computed, onMounted, ref } from 'vue';
-  import { refId }  from '@/store'
+  import { 
+    refId, 
+    isSelected, 
+    isStarted,
+    isEnded,
+    defaultGridCell }  from '@/store'
 
-  const props = defineProps({
-    defaultCells: {
-        type: Object,
-        default(rawProps) {
-            return [];
-        }
-    },
-    isStarted: {
-        type: Boolean,
-        default: false
-    },
-    isEnded: {
-        type: Boolean,
-        default: false
-    },
-    isSelected: {
-        type: Boolean,
-        default: false
-    }
-  });
+  //const props = defineProps({
+  //  isStarted: {
+  //      type: Boolean,
+  //      default: false
+  //  },
+  //  isEnded: {
+  //      type: Boolean,
+  //      default: false
+  //  },
+  //});
 
   const emit = defineEmits([
     'mouseover', 
@@ -41,7 +35,7 @@
 <template>
     <!--<button @click="$emit('clickme', '1234')">click me</button>-->
   <div
-    v-for="g of defaultCells"
+    v-for="g of defaultGridCell"
     class="grid-page__box">
       <div
         :class="[{ selected: g.selected  }, g.class]"

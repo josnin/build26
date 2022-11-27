@@ -1,33 +1,22 @@
 <script setup>
   import { computed, onMounted, ref } from 'vue';
   import GridDefault from '@/components/GridDefault.vue'
-  import { refId, gColNum, gRowNum }  from '@/store'
+  import { 
+    refId, 
+    gColNum, 
+    gRowNum, 
+    isSelected, 
+    isStarted,
+    isEnded,
+    mergedCells, 
+    defaultGridCell }  from '@/store'
   
-  const defaultGridCell = ref([]);
-  const mergedCells = ref([]);
   const gridTemplateColumns = ref(null)
   const gridPage = ref();
-
-  const isSelected = ref(false);
-
-  // start & end cells selection
-  const isStarted = ref(true)
-  const isEnded = ref(false)
 
   // start & end resize heigh / width
   const isResize = ref(false)
   const resizeColNum = ref(0);
-
-  //const props = defineProps({
-  //  colNum: {
-  //    type: Number,
-  //    default: 3
-  //  },
-  //  rowNum: {
-  //    type: Number,
-  //    default: 5
-  //  },
-  //});
 
   const currentRowStart = ref(null)
   const currentColStart = ref(null)
@@ -254,20 +243,15 @@
 </script>
 
 <template>
-  {{refId}}
   <div 
     class="grid-page"
     ref="gridPage"
   >
   <GridDefault 
-    :default-cells="defaultGridCell"
-    :is-started="isStarted"
-    :is-ended="isEnded"
-    :is-selected="isSelected"
     @highlightcells="highlightSelectedCells" 
+    @startcolresize="startColGridResize" 
     @oncolresize="onColGridResize" 
     @endcolresize="endColGridResize"
-    @startcolresize="startColGridResize" 
     @setrowcolstart="setRowColStart"
     @setrowcolend="setRowColEnd"
     />
