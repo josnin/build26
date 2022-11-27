@@ -75,3 +75,60 @@
 </template>
 <!-- default grid cells -->
 
+
+<style lang="scss" scoped>
+
+
+  .selected {
+    border:1px solid rgb(26, 115, 232);
+  }
+
+  .drag-handler-circle {
+    pointer-events: auto;
+    background: white; 
+    position: absolute;
+    border-radius: 50%;
+    z-index: 1000;
+    opacity: 0.6;
+    width:7px;
+    height:7px;
+  }
+
+  .edit-grid-height {
+    border: 2px solid rgb(26, 115, 232);
+    @extend .drag-handler-circle;
+    cursor: row-resize;
+    left: 45%;
+    top: 95%;
+    width:7px;
+    height:7px;
+  }
+
+  .edit-grid-width {
+    border: 2px solid rgb(26, 115, 232);
+    @extend .drag-handler-circle;
+    cursor: col-resize;
+    left: 99.6%;
+    top: 30%;
+    width:7px;
+    height:7px;
+  }
+
+  .edit-gap-row {
+    border: 1px solid rgb(26, 115, 232);
+    @extend .drag-handler-circle;
+    cursor: row-resize;
+    left: 25%;
+    top: 97%;
+  }
+
+  .edit-gap-column {
+    border: 1px solid rgb(26, 115, 232);
+    @extend .drag-handler-circle;
+    cursor: col-resize;
+    left: 99.6%;
+    top: 70%;
+  }
+
+
+</style>
