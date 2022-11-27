@@ -1,10 +1,5 @@
 <script setup>
 
-  import { useStore } from 'vuex';
-  import useSite  from '@/use/useSite';
-
-  const store = useStore();
-  const site = useSite();
 
 
 

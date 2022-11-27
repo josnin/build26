@@ -3,32 +3,20 @@
   import Button from '@/components/Button.vue'
   import Grid from '@/views/Grid.vue'
   import Box from '@/components/Box.vue'
-  import useSite  from '@/use/useSite';
-  import store from '@/store';
-
-  import { useStore } from 'vuex';
-
-  const site = useSite();
-  const store1 = useStore();
-  const classId = computed( () => store1.state.grid.grid.classId);
+  import { dragComponent } from '@/store';
 
   const onDrop = (e) => {
-    const app = createApp(store1.state.site.drag_component);
+    const app = createApp(dragComponent.value);
     const el = document.createElement("div")
     el.dataset.b26 = (+new Date).toString(36);
-    app.use(store).mount(el)
+    app.mount(el)
     e.target.appendChild(el);
 
-
-    //document.querySelectorAll('[data-b26]').forEach(el2 => { 
-    //  console.log(el2.dataset.b26);
-    //  console.log(el2.getBoundingClientRect().y);
-    //})
 
   };
 
   const onDrag = (e, t) => {
-    site.setDragComponent(t) ;
+    dragComponent.value = t;
   }
 
   const unMerge = () => {

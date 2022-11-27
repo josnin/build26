@@ -1,12 +1,11 @@
 <script setup>
   import { computed, onMounted, ref } from 'vue';
-  import useGrid  from '@/use/useGrid';
+  import GridDefault from '@/components/GridDefault.vue'
+  import { refId }  from '@/store'
   
   const defaultGridCell = ref([]);
   const mergedCells = ref([]);
-  const grid = useGrid();
-  const gridTemplateColumns = ref('1fr 1fr')
-  const refId = ref([])
+  const gridTemplateColumns = ref(null)
   const gridPage = ref();
 
   const isSelected = ref(false);
@@ -199,7 +198,7 @@
     gridTemplateColumns.value = Array(props.colNum).fill('1fr').join(' ');
   }
 
-  const startColGridResize = (evt, colNum) => {
+  const startColGridResize = (colNum) => {
     isResize.value = true;
     resizeColNum.value = colNum;
     gridPage.value.style.cursor = 'col-resize'; // horizontal drag
@@ -251,49 +250,28 @@
 
   }
 
+
 </script>
 
 <template>
+  {{refId}}
   <div 
     class="grid-page"
     ref="gridPage"
   >
+  <GridDefault 
+    :default-cells="defaultGridCell"
+    :is-started="isStarted"
+    :is-ended="isEnded"
+    :is-selected="isSelected"
+    @highlightcells="highlightSelectedCells" 
+    @oncolresize="onColGridResize" 
+    @endcolresize="endColGridResize"
+    @startcolresize="startColGridResize" 
+    @setrowcolstart="setRowColStart"
+    @setrowcolend="setRowColEnd"
+    />
 
-    <!-- default grid cells -->
-    <template
-      v-for="g of defaultGridCell"
-    >
-      <div
-        class="grid-page__box"
-        :class="[{ selected: g.selected  }, g.class]"
-        v-if="g.merged==false"
-        @mouseover="highlightSelectedCells(g.rowStart, g.colStart)" 
-        @mousemove.prevent="onColGridResize($event)" 
-        @mouseup.prevent="endColGridResize()"
-        :ref="(el) => refId[g.class] = el"
-      >
-         {{g}} {{isStarted}} {{g.selected}} 
-        <button 
-          v-if="isStarted" 
-          @click="setRowColStart(g.rowStart, g.colStart); isSelected=true">
-          Start <!-- start selection -->
-        </button>
-        <button 
-          v-if="isEnded" 
-          @click="setRowColEnd(g.rowStart, g.rowEnd, g.colStart, g.colEnd); isSelected=false">
-          End  <!--end selection -->
-        </button>
-        <span 
-            @mousedown.prevent="startColGridResize($event, g.colStart)" 
-            class="edit-grid-width" 
-            title="Ëdit Grid Width"
-        ><!--edit grid width --></span>
-        <span class="edit-grid-height" title="Ëdit Grid Height"><!--edit grid height --></span>
-        <span class="edit-gap-row" title="Ëdit Grid Gap row"><!--edit grid gap row--></span>
-        <span class="edit-gap-column" title="Ëdit Grid Gap column"><!--edit grid gap column--></span>
-      </div>
-    </template>
-    <!-- default grid cells -->
 
     <!-- display merged cells -->
     <template
@@ -329,7 +307,8 @@
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style lang="scss" >
+
 
   .grid-page {
     display: grid;
@@ -406,6 +385,7 @@
     left: 99.6%;
     top: 70%;
   }
+
 
 
 </style>
