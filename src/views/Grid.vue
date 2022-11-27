@@ -9,6 +9,9 @@
     isStarted,
     isEnded,
     mergedCells, 
+    currentRowStart,
+    currentColStart,
+    currentClassId,
     defaultGridCell }  from '@/store'
   
   const gridTemplateColumns = ref(null)
@@ -18,10 +21,7 @@
   const isResize = ref(false)
   const resizeColNum = ref(0);
 
-  const currentRowStart = ref(null)
-  const currentColStart = ref(null)
-  const currentClassId = ref(null)
-  const selectedGridCell = computed( () => defaultGridCell.value.filter(e => e.selected == true) );
+  const selectedGridCell = computed( () => defaultGridCell.value.filter(e => e.selected === true) );
 
   // @todo move to utils?
   const range = (min, max) => Array.from({ length: max - min + 1 }, (_, i) => min + i);
@@ -131,11 +131,13 @@
 
   const unSelectGridSelection = () => {
     // this will unselect grid in the defaultGridCell
+    console.log(selectedGridCell.value)
     selectedGridCell.value.map(e => {
       e.merged = true;
       e.selected = false;
       e.mergedId = currentClassId.value;
     });
+    console.log(selectedGridCell.value)
 
   }
 

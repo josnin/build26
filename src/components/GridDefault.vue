@@ -7,17 +7,6 @@
     isEnded,
     defaultGridCell }  from '@/store'
 
-  //const props = defineProps({
-  //  isStarted: {
-  //      type: Boolean,
-  //      default: false
-  //  },
-  //  isEnded: {
-  //      type: Boolean,
-  //      default: false
-  //  },
-  //});
-
   const emit = defineEmits([
     'mouseover', 
     'highlightcells', 
@@ -34,11 +23,11 @@
 <!-- default grid cells -->
 <template>
     <!--<button @click="$emit('clickme', '1234')">click me</button>-->
-  <div
+  <template
     v-for="g of defaultGridCell"
-    class="grid-page__box">
+    >
       <div
-        :class="[{ selected: g.selected  }, g.class]"
+        :class="['grid-page__box', { selected: g.selected  }, g.class]"
         v-if="g.merged==false"
         :ref="(el) => refId[g.class] = el"
         @mouseover="$emit('highlightcells', g.rowStart, g.colStart)" 
@@ -65,7 +54,7 @@
         <span class="edit-gap-row" title="Ëdit Grid Gap row"><!--edit grid gap row--></span>
         <span class="edit-gap-column" title="Ëdit Grid Gap column"><!--edit grid gap column--></span>
     </div>
-  </div>
+  </template>
 </template>
 <!-- default grid cells -->
 

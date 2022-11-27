@@ -9,7 +9,10 @@ export const isSelected = ref(false)
 export const isStarted = ref(true)
 export const isEnded = ref(false)
 export const mergedCells = ref([])
-export const defaultGridCell = ref([]);
+export const defaultGridCell = ref([])
+export const currentRowStart = ref(null)
+export const currentColStart = ref(null)
+export const currentClassId = ref(null)
 
 
 // site state
