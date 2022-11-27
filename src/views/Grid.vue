@@ -1,6 +1,7 @@
 <script setup>
   import { computed, onMounted, ref } from 'vue';
   import GridDefault from '@/components/GridDefault.vue'
+  import GridMergedCells from '@/components/GridMergedCells.vue'
   import { 
     refId, 
     gColNum, 
@@ -249,46 +250,19 @@
     class="grid-page"
     ref="gridPage"
   >
-  <GridDefault 
-    @highlightcells="highlightSelectedCells" 
-    @startcolresize="startColGridResize" 
-    @oncolresize="onColGridResize" 
-    @endcolresize="endColGridResize"
-    @setrowcolstart="setRowColStart"
-    @setrowcolend="setRowColEnd"
+
+    <GridDefault 
+      @highlightcells="highlightSelectedCells" 
+      @startcolresize="startColGridResize" 
+      @oncolresize="onColGridResize" 
+      @endcolresize="endColGridResize"
+      @setrowcolstart="setRowColStart"
+      @setrowcolend="setRowColEnd"
     />
 
-
-    <!-- display merged cells -->
-    <template
-      v-for="merged of mergedCells"
-    >
-      <div
-        class="grid-page__box"
-        :class="merged.mergedId"
-      >
-      {{merged}}
-        <button 
-          @click="unMerge(merged.mergedId)">
-          Un Merge?
-        </button>
-      </div>
-    </template>
-    <!-- display merged cells -->
-
-    <!-- generate style -->
-    <component is="style">
-      <template v-for="style of mergedCells">
-        .{{style.mergedId}} {
-          grid-area: {{style.gridArea}};
-          justify-items: {{style.justifyItems}};
-          align-items: {{style.alignItems}};
-          height: {{style.height}};
-        }
-
-      </template>
-    </component>
-    <!-- generate style -->
+    <GridMergedCells
+      @unmerge="unMerge"
+    />
 
   </div>
 </template>
