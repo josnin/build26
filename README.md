@@ -1,10 +1,24 @@
 # Build26
 
+drag and drop page builder
+
 ![image](https://user-images.githubusercontent.com/3206118/204799215-b70c730c-5b34-42fe-b211-fc0888736e67.png)
 
+## Installation 
+```
+npm install
+```
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+## How to run development server? 
+```
+cd /home/{username}/build26/
+npm run dev
+```
 
-## Recommended IDE Setup
+### Help
 
-- [VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=johnsoncodehk.volar)
+Need help? Open an issue in: [ISSUES](https://github.com/josnin/build26/issues)
+
+
+### Contributing
+Want to improve and add feature? Fork the repo, add your changes and send a pull request.
