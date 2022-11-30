@@ -7,6 +7,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@material/drawer": "^14.0.0",
+    "@material/icon-button": "^14.0.0",
+    "@material/theme": "^14.0.0",
+    "@material/top-app-bar": "^14.0.0",
     "vue": "^3.2.25"
   },
   "devDependencies": {

@@ -1,3 +1,25 @@
+@use "@material/theme" with (
+  $primary:#4357ba,
+  $secondary: #fed353,
+  $background: #b3afe3,
+);
+
+@use "@material/theme/mdc-theme"; 
+
+@use "@material/icon-button";
+@use "@material/top-app-bar/mdc-top-app-bar";
+@use "@material/drawer";
+@use "@material/list";
+@use "@material/icon-button/styles";
+@use "@material/elevation/mdc-elevation";
+@use "@material/typography/mdc-typography";
+
+@include drawer.core-styles;
+@include drawer.dismissible-core-styles;
+@include drawer.modal-core-styles;
+@include list.deprecated-core-styles;
+//@include icon-button.core-styles;
+
 *, *:before, *:after {
     box-sizing: border-box;
 }
@@ -5,4 +27,5 @@
 html, body {
     margin:0;
     padding:0;
+    background-color: #f5f5f5;
   }
