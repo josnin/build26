@@ -7,7 +7,7 @@
   import Button from '@/components/Button.vue'
   import Grid from '@/views/Grid.vue'
   import Box from '@/components/Box.vue'
-  import { dragComponent } from '@/store';
+  import { dragComponent, widthDelta } from '@/store';
 
   onMounted( () => {
     const iconButtonRipple = new MDCRipple(document.querySelector('.mdc-icon-button'));
@@ -52,7 +52,10 @@
 </script>
 
 <template>
-  <aside class="mdc-drawer mdc-drawer--dismissible">
+  <aside 
+    class="mdc-drawer mdc-drawer--dismissible"
+    ref="widthDelta"
+    >
     <div class="mdc-drawer__content">
       <div class="mdc-deprecated-list">
         <a class="mdc-deprecated-list-item mdc-deprecated-list-item--activated" href="#" aria-current="page"
@@ -88,7 +91,7 @@
       <div class="mdc-top-app-bar__row">
         <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
           <button class="material-icons mdc-top-app-bar__navigation-icon mdc-icon-button">menu</button>
-          <span class="mdc-top-app-bar__title">Drag & Drop</span>
+          <span class="mdc-top-app-bar__title">Builder26</span>
         </section>
       </div>
     </header>
@@ -99,7 +102,7 @@
           @drop="onDrop($event)"
           @dragover.prevent
           >
-          Drop here 1
+          Drop here 
         </div>
       </div>
     </main>

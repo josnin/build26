@@ -13,7 +13,8 @@
     currentRowStart,
     currentColStart,
     currentClassId,
-    defaultGridCell }  from '@/store'
+    defaultGridCell,
+    widthDelta }  from '@/store'
   
   const gridTemplateColumns = ref(null)
   const gridPage = ref();
@@ -215,7 +216,7 @@
 
   const updateGridTemplateColumns = (evt, colWidths) => {
     const colNum = resizeColNum.value;
-    let newColWidth = evt.clientX - 89;
+    let newColWidth = evt.clientX - widthDelta.value.clientWidth //document.querySelector('.mdc-drawer').clientWidth;
     if (colNum > 1) {
       const colRange = [...Array(colNum - 1).keys()];
       colRange.forEach( e => {
