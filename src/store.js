@@ -14,6 +14,7 @@ export const currentRowStart = ref(null)
 export const currentColStart = ref(null)
 export const currentClassId = ref(null)
 export const widthDelta = ref(null)
+export const heightDelta = ref(null)
 
 
 // site state

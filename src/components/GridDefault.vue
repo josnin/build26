@@ -10,14 +10,15 @@
     defaultGridCell }  from '@/store'
 
   const emit = defineEmits([
-    'mouseover', 
     'highlightcells', 
     'oncolresize', 
     'startcolresize', 
     'endcolresize',
     'setrowcolstart',
     'setrowcolend',
-    'clickme'
+    'onrowresize', 
+    'startrowresize', 
+    'endrowresize',
 ])
 
 const displayColResize = (col) => {
@@ -32,7 +33,7 @@ const displayRowResize = (row) => {
 
 <!-- default grid cells -->
 <template>
-    <!--<button @click="$emit('clickme', '1234')">click me</button>-->
+
   <template
     v-for="g of defaultGridCell"
     >
@@ -41,10 +42,10 @@ const displayRowResize = (row) => {
         v-if="g.merged==false"
         :ref="(el) => refId[g.class] = el"
         @mouseover="$emit('highlightcells', g.rowStart, g.colStart)" 
-        @mousemove.prevent="$emit('oncolresize', $event)" 
-        @mouseup.prevent="$emit('endcolresize')"
+        @mousemove.prevent="$emit('oncolresize', $event);$emit('onrowresize', $event)" 
+        @mouseup.prevent="$emit('endcolresize'); $emit('endrowresize')"
        >
-         {{g}} 
+        {{g}}
         <button 
           v-if="isStarted" 
           @click="$emit('setrowcolstart', g.rowStart, g.colStart); isSelected=true">
@@ -63,6 +64,7 @@ const displayRowResize = (row) => {
         ><!--edit grid width --></span>
         <span 
             v-if="displayRowResize(g.rowStart)"
+            @mousedown="$emit('startrowresize', g.rowStart)" 
             class="edit-grid-height" 
             title="Ëdit Grid Height">
         <!--edit grid height --></span>

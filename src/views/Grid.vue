@@ -14,14 +14,18 @@
     currentColStart,
     currentClassId,
     defaultGridCell,
-    widthDelta }  from '@/store'
+    widthDelta,
+    heightDelta }  from '@/store'
   
   const gridTemplateColumns = ref(null)
+  const gridTemplateRows = ref(null)
   const gridPage = ref();
 
   // start & end resize heigh / width
-  const isResize = ref(false)
+  const isColResize = ref(false)
+  const isRowResize = ref(false)
   const resizeColNum = ref(0);
+  const resizeRowNum = ref(0);
 
   const selectedGridCell = computed( () => defaultGridCell.value.filter(e => e.selected === true) );
 
@@ -30,7 +34,8 @@
 
   onMounted(() => {
     genDefaultGridCell();
-    getGridTemplateColumns();
+    setGridTemplateColumns();
+    setGridTemplateRows();
   })
 
   const genDefaultGridCell = () => {
@@ -187,18 +192,34 @@
   }
 
 
-  const getGridTemplateColumns = () => {
-    gridTemplateColumns.value = Array(gColNum.value).fill('1fr').join(' ');
+  const setGridTemplateColumns = () => {
+    gridTemplateColumns.value = Array(gColNum.value).fill('1fr').join(' '); // @todo 1fr?
+  }
+
+  const setGridTemplateRows = () => {
+    gridTemplateRows.value = Array(gRowNum.value).fill('1fr').join(' ');
   }
 
   const startColGridResize = (colNum) => {
-    isResize.value = true;
+    isColResize.value = true;
     resizeColNum.value = colNum;
     gridPage.value.style.cursor = 'col-resize'; // horizontal drag
   }
 
+  const startRowGridResize = (rowNum) => {
+    isRowResize.value = true;
+    resizeRowNum.value = rowNum;
+    gridPage.value.style.cursor = 'row-resize'; // vertical drag
+  }
+
+  const endRowGridResize = () => {
+    isRowResize.value = false;
+    resizeRowNum.value = 0;
+    gridPage.value.style.cursor = 'auto';
+  }
+
   const endColGridResize = () => {
-    isResize.value = false;
+    isColResize.value = false;
     resizeColNum.value = 0;
     gridPage.value.style.cursor = 'auto';
   }
@@ -214,6 +235,7 @@
 
   }
 
+  
   const updateGridTemplateColumns = (evt, colWidths) => {
     const colNum = resizeColNum.value;
     let newColWidth = evt.clientX - widthDelta.value.clientWidth //document.querySelector('.mdc-drawer').clientWidth;
@@ -232,16 +254,48 @@
   }
 
   const onColGridResize = (evt) => {
-    if (isResize.value) {
-
-      const colWidths = getColWidths(); // @todo use store
-
+    if (isColResize.value) {
+      const colWidths = getColWidths();
       updateGridTemplateColumns(evt, colWidths);
-
-
     }
+  }
+
+  const getRowHeights = () => {
+      const rowHeights = []; // @todo use store
+      const rowNums = range(1, gRowNum.value);
+      rowNums.forEach( (r, index) => {
+        rowHeights[index] = refId.value[`gc${r}1`].clientHeight;
+      })
+
+      return rowHeights;
 
   }
+
+  const updateGridTemplateRows = (evt, rowHeights) => {
+    const rowNum = resizeRowNum.value;
+    let newRowHeight = evt.clientY - 89 // @todo // - heightDelta.value.clientWidth //document.querySelector('.mdc-drawer').clientWidth;
+    if (rowNum > 1) {
+      const rowRange = [...Array(rowNum - 1).keys()];
+      rowRange.forEach( e => {
+        newRowHeight -= rowHeights[e];
+      })
+    }
+
+    const newVal = gridTemplateRows.value.split(' ');
+    newVal[rowNum - 1] = `${newRowHeight}px`
+    gridTemplateRows.value = newVal.join(' '); 
+    console.log(gridTemplateRows.value)
+
+
+  }
+
+  const onRowGridResize = (evt) => {
+    if (isRowResize.value) {
+      const rowHeights = getRowHeights(); 
+      updateGridTemplateRows(evt, rowHeights);
+    }
+  }
+
 
 
 </script>
@@ -255,8 +309,11 @@
     <GridDefault 
       @highlightcells="highlightSelectedCells" 
       @startcolresize="startColGridResize" 
-      @oncolresize="onColGridResize" 
       @endcolresize="endColGridResize"
+      @oncolresize="onColGridResize" 
+      @startrowresize="startRowGridResize" 
+      @endrowresize="endRowGridResize"
+      @onrowresize="onRowGridResize" 
       @setrowcolstart="setRowColStart"
       @setrowcolend="setRowColEnd"
     />
@@ -274,7 +331,7 @@
   .grid-page {
     display: grid;
     grid-template-columns: v-bind('gridTemplateColumns'); 
-    grid-template-rows: repeat(v-bind('gRowNum'), 1fr) ;
+    grid-template-rows: v-bind('gridTemplateRows'); 
     justify-items:center;
     align-items:center;
     //padding:.2rem; -->> @todo this have effect in page clientWidth when resizing
