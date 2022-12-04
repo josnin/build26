@@ -5,6 +5,8 @@
     isSelected, 
     isStarted,
     isEnded,
+    gColNum,
+    gRowNum,
     defaultGridCell }  from '@/store'
 
   const emit = defineEmits([
@@ -17,6 +19,14 @@
     'setrowcolend',
     'clickme'
 ])
+
+const displayColResize = (col) => {
+  return col != gColNum.value
+}
+
+const displayRowResize = (row) => {
+  return row != gRowNum.value
+}
 
 </script>
 
@@ -46,13 +56,16 @@
           End  <!--end selection -->
         </button>
         <span 
+            v-if="displayColResize(g.colStart)"
             @mousedown="$emit('startcolresize', g.colStart)" 
             class="edit-grid-width" 
             title="Ëdit Grid Width"
         ><!--edit grid width --></span>
-        <span class="edit-grid-height" title="Ëdit Grid Height"><!--edit grid height --></span>
-        <span class="edit-gap-row" title="Ëdit Grid Gap row"><!--edit grid gap row--></span>
-        <span class="edit-gap-column" title="Ëdit Grid Gap column"><!--edit grid gap column--></span>
+        <span 
+            v-if="displayRowResize(g.rowStart)"
+            class="edit-grid-height" 
+            title="Ëdit Grid Height">
+        <!--edit grid height --></span>
     </div>
   </template>
 </template>
@@ -67,50 +80,29 @@
   }
 
   .drag-handler-circle {
+    border: 1px solid rgb(26, 115, 232);
     pointer-events: auto;
     background: white; 
     position: absolute;
     border-radius: 50%;
     z-index: 1000;
     opacity: 0.6;
-    width:7px;
-    height:7px;
+    width:5px;
+    height:5px;
   }
 
   .edit-grid-height {
-    border: 2px solid rgb(26, 115, 232);
     @extend .drag-handler-circle;
     cursor: row-resize;
     left: 45%;
-    top: 95%;
-    width:7px;
-    height:7px;
+    top: 99%;
   }
 
   .edit-grid-width {
-    border: 2px solid rgb(26, 115, 232);
     @extend .drag-handler-circle;
     cursor: col-resize;
     left: 99.6%;
-    top: 30%;
-    width:7px;
-    height:7px;
-  }
-
-  .edit-gap-row {
-    border: 1px solid rgb(26, 115, 232);
-    @extend .drag-handler-circle;
-    cursor: row-resize;
-    left: 25%;
-    top: 97%;
-  }
-
-  .edit-gap-column {
-    border: 1px solid rgb(26, 115, 232);
-    @extend .drag-handler-circle;
-    cursor: col-resize;
-    left: 99.6%;
-    top: 70%;
+    top: 50%;
   }
 
 
